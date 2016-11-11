@@ -7,6 +7,7 @@ import (
 
 	ctxu "github.com/docker/distribution/context"
 	"github.com/docker/distribution/registry/api/errcode"
+	"github.com/getsentry/raven-go"
 )
 
 // closeResources closes all the provided resources after running the target
@@ -58,6 +59,7 @@ func copyFullPayload(responseWriter http.ResponseWriter, r *http.Request, destWr
 
 	if err != nil {
 		ctxu.GetLogger(context).Errorf("unknown error reading request payload: %v", err)
+		raven.CaptureErrorAndWait(err, nil)
 		*errSlice = append(*errSlice, errcode.ErrorCodeUnknown.WithDetail(err))
 		return err
 	}

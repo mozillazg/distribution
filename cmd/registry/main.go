@@ -14,10 +14,16 @@ import (
 	_ "github.com/docker/distribution/registry/storage/driver/inmemory"
 	_ "github.com/docker/distribution/registry/storage/driver/middleware/cloudfront"
 	_ "github.com/docker/distribution/registry/storage/driver/oss"
+	_ "github.com/docker/distribution/registry/storage/driver/qiniu"
 	_ "github.com/docker/distribution/registry/storage/driver/s3-aws"
 	_ "github.com/docker/distribution/registry/storage/driver/s3-goamz"
 	_ "github.com/docker/distribution/registry/storage/driver/swift"
+	"github.com/getsentry/raven-go"
 )
+
+func init() {
+	raven.SetDSN("xxx")
+}
 
 func main() {
 	registry.RootCmd.Execute()

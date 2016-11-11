@@ -13,6 +13,7 @@ import (
 	"github.com/docker/distribution/registry/api/v2"
 	"github.com/docker/distribution/registry/storage"
 	"github.com/gorilla/handlers"
+	"github.com/getsentry/raven-go"
 )
 
 // blobUploadDispatcher constructs and returns the blob upload handler for the
@@ -24,15 +25,15 @@ func blobUploadDispatcher(ctx *Context, r *http.Request) http.Handler {
 	}
 
 	handler := handlers.MethodHandler{
-		"GET":  http.HandlerFunc(buh.GetUploadStatus),
-		"HEAD": http.HandlerFunc(buh.GetUploadStatus),
+		"GET":  http.HandlerFunc(raven.RecoveryHandler(buh.GetUploadStatus)),
+		"HEAD": http.HandlerFunc(raven.RecoveryHandler(buh.GetUploadStatus)),
 	}
 
 	if !ctx.readOnly {
-		handler["POST"] = http.HandlerFunc(buh.StartBlobUpload)
-		handler["PATCH"] = http.HandlerFunc(buh.PatchBlobData)
-		handler["PUT"] = http.HandlerFunc(buh.PutBlobUploadComplete)
-		handler["DELETE"] = http.HandlerFunc(buh.CancelBlobUpload)
+		handler["POST"] = http.HandlerFunc(raven.RecoveryHandler(buh.StartBlobUpload))
+		handler["PATCH"] = http.HandlerFunc(raven.RecoveryHandler(buh.PatchBlobData))
+		handler["PUT"] = http.HandlerFunc(raven.RecoveryHandler(buh.PutBlobUploadComplete))
+		handler["DELETE"] = http.HandlerFunc(raven.RecoveryHandler(buh.CancelBlobUpload))
 	}
 
 	if buh.UUID != "" {
